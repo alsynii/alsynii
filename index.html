@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Kue Sederhana 🍰</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #ffe6f2, #fff0e6);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #ff3399;
+      margin-bottom: 10px;
+    }
+
+    #game-area {
+      position: relative;
+      width: 90vw;
+      max-width: 500px;
+      height: 400px;
+      background-color: #fff8f0;
+      border: 4px solid #ff99cc;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 153, 204, 0.4);
+      overflow: hidden;
+    }
+
+    .item {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .item:hover {
+      transform: scale(1.2);
+    }
+
+    #info {
+      display: flex;
+      justify-content: space-between;
+      width: 90vw;
+      max-width: 500px;
+      margin: 10px 0;
+      font-size: 18px;
+      color: #ff3399;
+    }
+
+    #start-btn {
+      background-color: #ff66b2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #start-btn:hover {
+      background-color: #ff3385;
+    }
+
+    #game-over {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      display: none;
+      box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+    }
+
+    #game-over h2 {
+      margin: 0;
+      color: #ff3399;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍰 Game Buat Kue 🍓</h1>
+  <div id="info">
+    <div>Skor: <span id="score">0</span></div>
+    <div>Waktu: <span id="time">30</span>s</div>
+  </div>
+  <button id="start-btn">Mulai Game</button>
+  <div id="game-area">
+    <div id="game-over">
+      <h2>Game Over!</h2>
+      <p>Skormu: <span id="final-score">0</span></p>
+      <button onclick="startGame()">Main Lagi</button>
+    </div>
+  </div>
+
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const scoreDisplay = document.getElementById('score');
+    const timeDisplay = document.getElementById('time');
+    const startBtn = document.getElementById('start-btn');
+    const gameOverScreen = document.getElementById('game-over');
+    const finalScore = document.getElementById('final-score');
+
+    let score = 0;
+    let time = 30;
+    let gameInterval;
+    let spawnInterval;
+
+    const items = [
+      '🍓', '🥚', '🧈', '🥛', '🍫', '🍰', '🍒', '🧁'
+    ];
+
+    function randomPosition() {
+      const x = Math.random() * (gameArea.clientWidth - 60);
+      const y = Math.random() * (gameArea.clientHeight - 60);
+      return { x, y };
+    }
+
+    function createItem() {
+      const item = document.createElement('div');
+      item.classList.add('item');
+      const emoji = items[Math.floor(Math.random() * items.length)];
+      item.textContent = emoji;
+      const pos = randomPosition();
+      item.style.left = `${pos.x}px`;
+      item.style.top = `${pos.y}px`;
+
+      item.addEventListener('click', () => {
+        score++;
+        scoreDisplay.textContent = score;
+        item.remove();
+      });
+
+      gameArea.appendChild(item);
+
+      setTimeout(() => {
+        if (item.parentElement) item.remove();
+      }, 1500);
+    }
+
+    function startGame() {
+      score = 0;
+      time = 30;
+      scoreDisplay.textContent = score;
+      timeDisplay.textContent = time;
+      gameOverScreen.style.display = 'none';
+      startBtn.style.display = 'none';
+
+      spawnInterval = setInterval(createItem, 800);
+      gameInterval = setInterval(() => {
+        time--;
+        timeDisplay.textContent = time;
+        if (time <= 0) endGame();
+      }, 1000);
+    }
+
+    function endGame() {
+      clearInterval(spawnInterval);
+      clearInterval(gameInterval);
+      document.querySelectorAll('.item').forEach(el => el.remove());
+      gameOverScreen.style.display = 'block';
+      finalScore.textContent = score;
+      startBtn.style.display = 'block';
+    }
+
+    startBtn.addEventListener('click', startGame);
+  </script>
+</body>
+  </html>
